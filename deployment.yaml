@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-kubernete
+spec:
+  selector:
+    matchLabels:
+      app: springboot-kubernete
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: springboot-kubernete
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: springboot-kubernete
+          image: boot:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          env:   # Setting Environmental Variables
+            - name: DB_HOST   # Setting Database host address
+              value: mysql
+            - name: DB_NAME  # Setting Database name
+              value: springit
+            - name: DB_USERNAME  # Setting Database username
+              value: root
+            - name: DB_PASSWORD # Setting Database password
+              value: ahmad11exalt
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-kubernetes-service
+spec:
+  ports:
+    - protocol: "TCP"
+      port: 8082        # The port inside the cluster
+      targetPort: 8082  # The port exposed by the service
+  type: LoadBalancer        # Type of service
+  selector:
+    app: springboot-kubernete
+---
