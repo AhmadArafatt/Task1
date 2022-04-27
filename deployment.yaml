@@ -1,0 +1,53 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-userinfo
+spec:
+  selector:
+    matchLabels:
+      app: springboot-userinfo
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: springboot-userinfo
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: springboot-userinfo
+          image: userinfo:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          env:   # Setting Environmental Variables
+            - name: DB_HOST   # Setting Database host address
+              value: mysql2
+            - name: DB_NAME  # Setting Database name
+              value: userinfo
+            - name: DB_USERNAME  # Setting Database username
+              value: root
+            - name: DB_PASSWORD # Setting Database password
+              value: ahmad11exalt
+            - name: EUREKA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: eurekaHost
+            - name: EUREKA_PORT # Setting Database password
+              value: "8081"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-userinfo-service
+spec:
+  ports:
+    - protocol: "TCP"
+      port: 8083    # The port inside the cluster
+      targetPort: 8083  # The port exposed by the service
+  type: LoadBalancer        # Type of service
+  selector:
+    app: springboot-userinfo
+---
