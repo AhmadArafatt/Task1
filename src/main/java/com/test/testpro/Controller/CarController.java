@@ -1,20 +1,32 @@
 package com.test.testpro.Controller;
 
+import com.test.testpro.Config.UserConfig;
 import com.test.testpro.exception.ApiRequestException;
 import com.test.testpro.model.Car;
+import com.test.testpro.model.User;
 import com.test.testpro.service.CarService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class CarController {
 
-    private CarService carService;
+    private final CarService carService;
+    private UserConfig userConfig;
+    private  String url;
 
-    public CarController(CarService carService) {
+    public CarController(CarService carService,UserConfig userConfig) {
+        this.userConfig=userConfig;
         this.carService = carService;
+
+
+
     }
 
     @GetMapping("/")
@@ -27,6 +39,24 @@ public class CarController {
     public List<Car> car() {
         return carService.findAll();
     }
+
+    @GetMapping("/user/{id}")
+    public  User user(@PathVariable long id) {
+        url=String.format("http://%s:%s/users/%d",this.userConfig.getHost(),this.userConfig.getPort(),id);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<User> usersInfo = restTemplate.getForEntity(url, User.class);
+        User user=usersInfo.getBody();
+        if(user!=null)
+        return user;
+        else throw new ApiRequestException("User doesnt found");
+    }
+
+    @GetMapping("/ho/{id}")
+    public String ho(@PathVariable long id) {
+         url=String.format("http://%s:%s/users/%d",this.userConfig.getHost(),this.userConfig.getPort(),id);
+        return url;
+    }
+
 
 
     @PutMapping("/rent/{id}/{rentBy}/{rentalPeriod}")

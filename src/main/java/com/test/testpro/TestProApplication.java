@@ -1,13 +1,16 @@
 package com.test.testpro;
 
+import com.test.testpro.Config.UserConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableRetry
+@EnableConfigurationProperties(UserConfig.class)
 public class TestProApplication {
 
     public static void main(String[] args) {

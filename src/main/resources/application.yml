@@ -1,0 +1,3 @@
+details:
+  host: ${USER_INFO_HOST}
+  port: ${USER_INFO_PORT}
