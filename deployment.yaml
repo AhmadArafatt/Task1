@@ -2,25 +2,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: springboot-kubernete
+  name: springboot-kubernetes
+
+
 spec:
   selector:
     matchLabels:
-      app: springboot-kubernete
-  replicas: 2
+      app: springboot-kubernetes
+  replicas: 1
+
   template:
     metadata:
       labels:
-        app: springboot-kubernete
+        app: springboot-kubernetes
     spec:
       restartPolicy: Always
       containers:
-        - name: springboot-kubernete
+        - name: springboot-kubernetes
           image: boot:1.0
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8082
+            - containerPort: 8085
           env:   # Setting Environmental Variables
+            - name: USER_INFO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: userinfoHost
+            - name: USER_INFO_PORT # Setting Database password
+              value: "8083"
             - name: DB_HOST   # Setting Database host address
               value: mysql
             - name: DB_NAME  # Setting Database name
@@ -29,6 +39,14 @@ spec:
               value: root
             - name: DB_PASSWORD # Setting Database password
               value: ahmad11exalt
+            - name: EUREKA_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: config
+                  key: eurekaHost
+            - name: EUREKA_PORT # Setting Database password
+              value: "8081"
+
 
 
 ---
@@ -36,12 +54,13 @@ apiVersion: v1
 kind: Service
 metadata:
   name: springboot-kubernetes-service
+
 spec:
   ports:
     - protocol: "TCP"
-      port: 8082        # The port inside the cluster
-      targetPort: 8082  # The port exposed by the service
+      port: 8085        # The port inside the cluster
+      targetPort: 8085  # The port exposed by the service
   type: LoadBalancer        # Type of service
   selector:
-    app: springboot-kubernete
+    app: springboot-kubernetes
 ---
